@@ -6,6 +6,7 @@ import com.shubham.Echoes.repository.EchoesEntryRepository;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,13 +21,19 @@ public class EchoesEntryService {
     @Autowired
     private UserService userService;
 
-
+  @Transactional
     public void saveEntry(EchoesEntry echoesEntry,String userName){
-        User user = userService.findByUserName(userName);
-        echoesEntry.setDate(LocalDateTime.now());
-        EchoesEntry saved = echoesEntryRepository.save(echoesEntry);
-        user.getEchoesEntries().add(saved);
-        userService.saveUser(user);
+      try {
+
+
+          User user = userService.findByUserName(userName);
+          echoesEntry.setDate(LocalDateTime.now());
+          EchoesEntry saved = echoesEntryRepository.save(echoesEntry);
+          user.getEchoesEntries().add(saved);
+          userService.saveEntry(user);
+      }catch (Exception e) {
+        throw new RuntimeException("An error occurred while saving the entry.", e);
+    }
     }
     public void saveEntry(EchoesEntry echoesEntry){
 
