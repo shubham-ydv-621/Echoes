@@ -29,7 +29,7 @@ public class SpringSecurity {
         return http
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/echoes/**","/user/**").authenticated()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/admin/**").hasRole("ADMIN ")
                         .anyRequest().permitAll()
                 )
                 .httpBasic(Customizer.withDefaults()) // same as .httpBasic()
