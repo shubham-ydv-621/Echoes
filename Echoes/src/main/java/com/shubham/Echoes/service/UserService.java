@@ -2,6 +2,7 @@ package com.shubham.Echoes.service;
 
 import com.shubham.Echoes.entity.User;
 import com.shubham.Echoes.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
+@Slf4j
 public class UserService {
 
     @Autowired
@@ -37,10 +39,20 @@ public class UserService {
         return userRepository.findByUserName(userName);
     }
 
-    public void saveNewUser(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setRoles(Arrays.asList("USER"));
-        userRepository.save(user);
+    public boolean saveNewUser(User user) {
+        try {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            user.setRoles(Arrays.asList("USER"));
+            userRepository.save(user);
+            return true;
+        } catch (Exception e) {
+            log.error("hahahhahhahahahah");
+            log.warn("hahahhahhahahahah");
+            log.info("hahahhahhahahahah");
+            log.debug("hahahhahhahahahah");
+            log.trace("hahahhahhahahahah");
+            return false;
+        }
     }
 
     public void saveAdmin(User user) {

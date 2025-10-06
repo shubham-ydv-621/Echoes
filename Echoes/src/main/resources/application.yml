@@ -1,3 +1,10 @@
 spring:
   profiles:
     active: prod
+
+
+    logging:
+      level:
+        net:
+          shubham:
+            Echoes: ERROR
