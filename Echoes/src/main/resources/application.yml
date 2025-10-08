@@ -2,9 +2,19 @@ spring:
   profiles:
     active: prod
 
+  mail:
+    debug: true
+    host: smtp.gmail.com
+    port: 587
+    username: "shubham22csu444@ncuindia.edu"
+    password: "ysca wkyf rxye csah"  # wrap in quotes
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
 
-    logging:
-      level:
-        net:
-          shubham:
-            Echoes: ERROR
+
+logging:
+  level:
+    net:
+      shubham:
+        Echoes: ERROR
