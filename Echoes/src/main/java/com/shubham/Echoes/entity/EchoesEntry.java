@@ -1,5 +1,6 @@
 package com.shubham.Echoes.entity;
 
+import com.shubham.Echoes.enums.Sentiment;
 import lombok.*;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
@@ -19,6 +20,7 @@ public class EchoesEntry {
     private String tittle;
     private String content;
   private LocalDateTime date;
+    private Sentiment sentiment;
 
 
 }
