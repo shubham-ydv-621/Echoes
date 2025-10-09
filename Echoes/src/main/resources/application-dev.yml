@@ -10,5 +10,9 @@ spring:
       # password: Shubham@22csu444
       auto-index-creation: true
 
+  redis:
+    host: localhost
+    port: 6379
+
   main:
     allow-circular-references: true
