@@ -17,9 +17,12 @@ public class EchoesApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(EchoesApplication.class, args);
 	}
-    @Bean
-    public PlatformTransactionManager add(MongoDatabaseFactory dbFactory){
-        return new MongoTransactionManager(dbFactory);
-    }
+   /*
+@Bean
+public PlatformTransactionManager add(MongoDatabaseFactory dbFactory){
+    return new MongoTransactionManager(dbFactory);
+}
+*/
+
 
 }
