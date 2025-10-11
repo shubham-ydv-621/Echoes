@@ -4,9 +4,11 @@ import com.shubham.Echoes.cache.AppCache;
 import com.shubham.Echoes.entity.EchoesEntry;
 import com.shubham.Echoes.entity.User;
 import com.shubham.Echoes.enums.Sentiment;
+import com.shubham.Echoes.model.SentimentData;
 import com.shubham.Echoes.repository.UserRepositoryImpl;
 import com.shubham.Echoes.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -17,9 +19,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-
 @Component
 public class UserScheduler {
+
 
     @Autowired
     private EmailService emailService;
@@ -30,23 +32,20 @@ public class UserScheduler {
     @Autowired
     private AppCache appCache;
 
-    // Runs every Sunday at 9 AM
+    @Autowired
+    private KafkaTemplate<String, SentimentData> kafkaTemplate;
+
     @Scheduled(cron = "0 0 9 * * SUN")
     public void fetchUsersAndSendSaMail() {
         List<User> users = userRepository.getUserForSA();
         for (User user : users) {
-            List<EchoesEntry> echoesEntries = user.getEchoesEntries();
-            List<Sentiment> sentiments = echoesEntries.stream()
-                    .filter(x -> x.getDate().isAfter(LocalDateTime.now().minus(7, ChronoUnit.DAYS)))
-                    .map(EchoesEntry::getSentiment)
-                    .collect(Collectors.toList());
-
+            List<EchoesEntry> journalEntries = user.getEchoesEntries();
+            List<Sentiment> sentiments = journalEntries.stream().filter(x -> x.getDate().isAfter(LocalDateTime.now().minus(7, ChronoUnit.DAYS))).map(x -> x.getSentiment()).collect(Collectors.toList());
             Map<Sentiment, Integer> sentimentCounts = new HashMap<>();
             for (Sentiment sentiment : sentiments) {
                 if (sentiment != null)
                     sentimentCounts.put(sentiment, sentimentCounts.getOrDefault(sentiment, 0) + 1);
             }
-
             Sentiment mostFrequentSentiment = null;
             int maxCount = 0;
             for (Map.Entry<Sentiment, Integer> entry : sentimentCounts.entrySet()) {
@@ -55,25 +54,20 @@ public class UserScheduler {
                     mostFrequentSentiment = entry.getKey();
                 }
             }
-
             if (mostFrequentSentiment != null) {
-                try {
-                    emailService.sendEmail(
-                            user.getEmail(),
-                            "Sentiment for previous week",
-                            "Your sentiment for the last 7 days: " + mostFrequentSentiment
-                    );
-                } catch (Exception e) {
-                    // Log the error
-                    System.err.println("Failed to send email to " + user.getEmail() + ": " + e.getMessage());
+                SentimentData sentimentData = SentimentData.builder().email(user.getEmail()).sentiment("Sentiment for last 7 days " + mostFrequentSentiment).build();
+                try{
+                    kafkaTemplate.send("weekly-sentiments", sentimentData.getEmail(), sentimentData);
+                }catch (Exception e){
+                    emailService.sendEmail(sentimentData.getEmail(), "Sentiment for previous week", sentimentData.getSentiment());
                 }
             }
         }
     }
 
-    // Clear cache every 10 minutes
     @Scheduled(cron = "0 0/10 * ? * *")
     public void clearAppCache() {
         appCache.init();
     }
+
 }
