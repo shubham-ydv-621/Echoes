@@ -16,17 +16,17 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/public")
 public class PublicController {
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
+   // @Autowired
+    //private AuthenticationManager authenticationManager;
 
-    @Autowired
-    private UserDetailsServiceImpl userDetailsService;
+   // @Autowired
+   // private UserDetailsServiceImpl userDetailsService;
 
-    @Autowired
-    private UserService userService;
+   // @Autowired
+   // private UserService userService;
 
-    @Autowired
-    private JwtUtil jwtUtil;
+ //   @Autowired
+  //  private JwtUtil jwtUtil;
 
     // Minimal working endpoint
     @GetMapping("/health-check")
