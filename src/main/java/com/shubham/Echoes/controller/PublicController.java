@@ -28,11 +28,13 @@ public class PublicController {
     @Autowired
     private JwtUtil jwtUtil;
 
+    // Minimal working endpoint
     @GetMapping("/health-check")
     public String healthCheck() {
         return "App is running fine!";
     }
 
+    /*
     @PostMapping("/signup")
     public ResponseEntity<String> signup(@RequestBody User user) {
         try {
@@ -68,4 +70,5 @@ public class PublicController {
             return new ResponseEntity<>("Invalid username or password", HttpStatus.UNAUTHORIZED);
         }
     }
+    */
 }
